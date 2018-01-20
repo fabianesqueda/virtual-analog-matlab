@@ -1,5 +1,5 @@
-% This script emulates the distortion stage in the Ibanez TS-808 guitar
-% pedal using trapezoidal rule and Newton's method.
+% This script emulates a guitar distortion stage reminiscent to that of the
+% Ibanez Tube Screamer.
 % 
 % Input values
 % 

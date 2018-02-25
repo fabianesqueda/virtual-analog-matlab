@@ -22,17 +22,15 @@ function [ Vout ] = SergeWavefolder( Vin )
 R = 33e3;
 Is = 2.52e-9;   % Saturation current (N914)
 N = 1.752;      % Diode ideality factor (N914)
-VT = 25.864e-3; % Thermal Voltage
+VT = 0.026; % Thermal Voltage
 
 Vout = zeros(size(Vin));
 
 for n=1:length(Vin)
 
     lambda = sign(Vin(n));
-
-    Vx = lambda*N*VT*LambertWFritsch(((R*Is)/(N*VT))*exp(lambda*(Vin(n))/(N*VT)));
-    
-    Vout(n) = Vin(n) - 2*Vx;
+        
+    Vout(n) = Vin(n) + 2*(lambda*R*Is - lambda*N*VT*LambertWFritsch(((R*Is)/(N*VT))*exp( (lambda*(Vin(n) + lambda*R*Is))/(N*VT))));
 
 end
 

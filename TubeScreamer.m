@@ -55,7 +55,7 @@ for n=1:length(Vin)
     Vin(n) = G*Vin(n);  % Input Gain
     
     % High Pass Input Stage
-    V_HP = ((1 - Ts/(2*R1*C1))*V_HP_n1 - Vin(n) + Vin_n1)/(1 + Ts/(2*R1*C1));
+    V_HP = ((1 - Ts/(2*R1*C1))*V_HP_n1 + Vin(n) - Vin_n1)/(1 + Ts/(2*R1*C1));
     I = V_HP/R1;
     
     % Newton Solver

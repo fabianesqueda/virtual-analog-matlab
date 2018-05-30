@@ -12,7 +12,7 @@
 %
 %% Load input signal
 
-[Vin, Fs] = audioread('TestGuitarPhrase.wav');
+[Vin, Fs] = audioread('CleanGuitar.wav');
 Vin = Vin(:,1);             % Convert to mono
 OS = 8;                     % Oversampling factor
 Vin = resample(Vin,OS,1);   % Upsample
@@ -22,7 +22,7 @@ Vout = zeros(size(Vin));    % Output vector
 %% User Parameters
 
 G = 0.1;      % Input gain (in V)  [0,1]
-k = 1;          % "Distortion" level [0,1]
+k = 0.05;          % "Distortion" level [0,1]
 if (k<0) || (k>1)
     error('Value of k should be between 0–1');
 end
@@ -60,13 +60,13 @@ for n=1:length(Vin)
     
     % Newton Solver
     V = V_n1;
-    for m=1:100
+    for m=1:1000
        
         F = V - V_n1 - (Ts/C2)*I + (Ts/(2*R2*C2))*(V+V_n1) + (Ts*Is/C2)*sinh(V/(N*VT)) + (Ts*Is/C2)*sinh(V_n1/(N*VT));
         dF = 1 + (Ts/(2*R2*C2)) + ((Ts*Is)/(N*VT*C2))*cosh(V/(N*VT));
         err = F/dF;
         
-        if abs(err)<10e-10
+        if abs(err)<10e-12
             break;
         else
             V = V - err;
@@ -75,12 +75,21 @@ for n=1:length(Vin)
     end
     
     % Read Output
-    Vout(n) = Vin(n) - V;
+    Vout(n) = Vin(n) + V;
     
     % Update states
     Vin_n1 = Vin(n);    V_HP_n1 = V_HP;    V_n1 = V;
     
 end
 
-Vout = resample(Vout,1,8);
+Vout = resample(Vout,1,OS);
+Vin = resample(Vin,1,OS);
+
+[imp, Fs] = audioread('CleanAmpIR.wav');
+
+Vout = conv(Vout,imp);
+
+Vout = Vout/max(abs(Vout));
+audiowrite('DistortedGuitar.wav',Vout,Fs)
+
 soundsc(Vout,Fs);
